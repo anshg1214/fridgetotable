@@ -71,7 +71,7 @@ app.post('/callback' , (req, res) => {
 });
 
 
-app.get("/inventory",requiresAuth(), (req, res) => {
+app.get("/inventory", (req, res) => {
 
     res.render("inventory" ,{inventory : inventory});
 
@@ -81,7 +81,7 @@ app.get('/profile', requiresAuth(), (req, res) => {
 });
 
 
-app.post("/additems",requiresAuth(), async (req, res) => {
+app.post("/additems", async (req, res) => {
     const userInput  = req.body;
     const foodInfo = await getFoodInfo(userInput.name, process.env.FOODAPP_ID, process.env.FOODAPP_KEY);
     datareq = foodInfo.data.parsed[0].food;
@@ -91,12 +91,12 @@ app.post("/additems",requiresAuth(), async (req, res) => {
 });
 
 
-app.post("/deleteitem",requiresAuth(), async (req, res) => {
+app.post("/deleteitem", async (req, res) => {
     inventory.splice(req.body.id, 1);
     res.redirect("/inventory");
 });
 
-app.post("/getrecipe",requiresAuth(), async (req, res) => {
+app.post("/getrecipe", async (req, res) => {
     const userInput  = req.body.value;
 
     const recipeOptions = await getRecipeOptions(userInput, process.env.RECEPIAPP_ID, process.env.RECEPIAPP_KEY);

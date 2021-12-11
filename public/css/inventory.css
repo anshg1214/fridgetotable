@@ -242,10 +242,16 @@ thead tr th{
     left: 50%;
     font-size: 20px;
     color: crimson;
-    padding: 0 5px;
+    padding: 0 -5px;
     background: #fff;
     transform: translateX(-50%);
 }
 #inventorytitle{
 	margin-top: 20px;
+}
+
+.introduction p{
+	font-size: 17px;
+	text-align: center;
+	text-transform: sentence-case;
 }
