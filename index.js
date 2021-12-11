@@ -28,7 +28,12 @@ const config = {
     baseURL: process.env.BASE_URL,
     clientID: process.env.CLIENT_ID,
     issuerBaseURL: process.env.ISSUER_BASE_URL,
-};
+    // afterCallback: (req, res) => {
+    //     return res.redirect("/inventory");
+
+    // }
+
+}; 
 
 app.use(auth(config));
 
@@ -53,10 +58,16 @@ app.use((req, res, next) => {
 });
 
 app.get("/", async (req, res) => {
-    // res.send(req.oidc.isAuthenticated() ? 'Logged in' : 'Logged out');
-
-    res.sendFile(__dirname + "/public/homepage/index.html");
+    authcheck = req.oidc.isAuthenticated()
+    if (!authcheck) {
+        // res.send(req.oidc.isAuthenticated() ? 'Logged in' : 'Logged out');
+        res.sendFile(__dirname + "/public/home.html");
+    }
+    else{
+        res.redirect('/inventory');
+    }
 });
+
 app.get("/sign-up", (req, res) => {
     res.oidc.login({
         authorizationParams: {
@@ -65,19 +76,15 @@ app.get("/sign-up", (req, res) => {
     });
 });
 
-app.post("/callback", (req, res) => {
-    console.log(req.body);
-    res.send("callback");
-});
 
-app.get("/inventory", (req, res) => {
+app.get("/inventory",requiresAuth(), (req, res) => {
     res.render("inventory", { inventory: inventory });
 });
 app.get("/profile", requiresAuth(), (req, res) => {
     res.send(JSON.stringify(req.oidc.user));
 });
 
-app.post("/additems", async (req, res) => {
+app.post("/additems",requiresAuth(), async (req, res) => {
     const userInput = req.body;
     const foodInfo = await getFoodInfo(
         userInput.name,
@@ -95,12 +102,12 @@ app.post("/additems", async (req, res) => {
     return res.redirect("/inventory");
 });
 
-app.post("/deleteitem", async (req, res) => {
+app.post("/deleteitem",requiresAuth(), async (req, res) => {
     inventory.splice(req.body.id, 1);
     res.redirect("/inventory");
 });
 
-app.post("/getrecipe", async (req, res) => {
+app.post("/getrecipe",requiresAuth(), async (req, res) => {
     const userInput = req.body.value;
 
     const recipeOptions = await getRecipeOptions(
