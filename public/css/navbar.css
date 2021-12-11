@@ -1,0 +1,197 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Ubuntu:wght@400;500;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Work+Sans:wght@300;400;500;600;700&display=swap");
+@font-face {
+    font-family: "samarkan";
+    src: url("./SAMAN___.ttf");
+    font-display: swap;
+}
+:root {
+    --headlinesFont: "Jost", sans-serif;
+    --bodyFont: "Work Sans", sans-serif;
+    --wildWatermelon: #ff4f87;
+    --fuelYellow: #f0a035;
+    --textColor: #323232;
+    --bodyBg: #d6d6d6;
+    --white: #fff;
+    --black: #000;
+}
+*{
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+    text-decoration: none;
+    font-size: 10px;
+
+}
+
+
+html{
+    scroll-behavior: smooth;
+    
+}
+
+body{
+    line-height: 1.5;
+    font-family: var(--bodyFont);
+}
+/* General */
+
+.max-width{
+    max-width: 1600px;
+    padding: 0 80px;
+    margin: auto;
+}
+
+section{
+    padding: 100px 0;
+}
+div {
+    display: block;
+}
+
+
+/* title */
+
+
+.title{
+    position: relative;
+    text-align: center;
+    font-size: 40px;
+    font-weight: 500;
+    padding-bottom: 20px;
+    font-family: ubuntu,sans-serif;
+    margin-bottom: 50px;
+}
+
+/* Navbar */
+
+
+.navibar{
+    font-family: 'samarkan';
+    position: fixed;
+    width: 100%;
+    padding: 20px 0;
+    background-color: #364F6B;
+    z-index: 500;
+    transition: all 0.3s ease;
+    font-weight: 600;
+    letter-spacing: 2px;
+
+}
+
+.navibar.sticky{
+    background-color: #dc143c;
+    padding-top: 10px;
+}
+
+.navibar .max-width{
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+}
+
+.navibar .logo a{
+    font-size: 3.8rem;
+    font-weight: 600;
+    color: #FC5185; 
+    transition: all 0.3s ease;
+
+}
+
+.navibar.sticky .logo a{
+    color: white; 
+    justify-items: left;
+}
+
+.navibar .logo a span{
+    font-size: 3.8rem;
+    font-weight: 600; 
+    color: white; 
+    transition: all 0.3s ease;
+
+}
+.navibar.sticky .logo a span{
+    font-size: 3.8rem;
+    font-weight: 600; 
+    color: white; 
+    color: #14dcb4; 
+}
+
+.navibar .max-width .menu li{
+    list-style: none;
+    display: inline-block;
+    margin-left: 20px;
+}
+
+.navibar .max-width .menu li .menu_btn{
+    display: block;
+    color: white;
+    margin-left: 25px;
+    font-size: 20px;
+    transition: all 0.3s ease;
+
+}
+
+.navibar .max-width .menu .menu_btn:hover{
+    display: block;
+    color: #FC5185;
+    margin-left: 25px;
+    font-size: 20px;
+}
+
+.navibar.sticky .max-width .menu .menu_btn:hover{
+    display: block;
+    color: #14dcb4;
+    margin-left: 25px;
+    font-size: 20px;
+}
+
+.barsmenu {
+    display: none;
+    cursor: pointer;
+}
+  
+.bar1, .bar2, .bar3 {
+    width: 35px;
+    height: 5px;
+    background-color: white;
+    margin: 6px 0;
+    transition: 0.4s;
+}
+  
+.change .bar1 {
+    -webkit-transform: rotate(-45deg) translate(-9px, 6px) ;
+    transform: rotate(-45deg) translate(-9px, 6px) ;
+}  
+
+.change .bar2 {
+    opacity: 0;
+}
+ 
+.change .bar3 {
+    -webkit-transform: rotate(45deg) translate(-8px, -8px) ;
+    transform: rotate(45deg) translate(-8px, -8px) ;
+}
+
+@media (max-width: 991px) {
+    .max-width{
+        padding: 0 50px;
+    }
+}
+@media (max-width: 947px){
+    .max-width{
+        max-width: 930px;
+    }
+    .menu{
+        display: none;
+    }
+}
+@media (max-width: 690px) {
+    .max-width{
+        padding: 0 23px;
+    }
+    .ft-recipe .ft-recipe__thumb{
+        height: 240px;
+    }
+
+}

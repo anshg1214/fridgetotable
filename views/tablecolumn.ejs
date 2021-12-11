@@ -1,0 +1,20 @@
+<tr>
+    <td>
+        <span class="checkboxspan">
+            <input type="checkbox" class ='checkbox' name="<%= index_number %>" value="<%= name %>">
+            <!-- <label for="checkbox1"></label> -->
+        </span>
+    </td>
+    <td><%= name %></td>
+    <td><%= quantity %></td>
+    <td><%= unit %></td>
+    <td><%= category %></td>
+    <td><img src="<%= image_url %>" alt="Image" style= "height: 40px; border-radius: 5px;"></td>
+    <td>
+        <form action="/deleteitem" method="post">
+            <button href="#" class="delete" name= "id" value="<%= index_number %>" data-toggle="modal">
+                <i class="material-icons" data-toggle="tooltip" title="Delete">&#xE872;</i>
+            </button>
+        </form>
+    </td>
+</tr>
