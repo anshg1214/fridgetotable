@@ -73,7 +73,7 @@
                     <tbody>
 
                         <% for(var i = 0; i < inventory.length; i++) { %>
-                            <%- include('tablecolumn', {index_number: i, name: inventory[i].name , quantity: inventory[i].quantity, unit: inventory[i].unit, category: inventory[i].category, image_url: inventory[i].image_url }); -%>
+                            <%- include('tablecolumn', {index_number: i, name: inventory[i].name , quantity: inventory[i].quantity, unit: inventory[i].unit, category: inventory[i].category, image_url: inventory[i].image_url , idnumber: inventory[i].idnumber}); -%>
                         <% }%>
                             
                     </tbody>

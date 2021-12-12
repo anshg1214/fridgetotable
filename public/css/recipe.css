@@ -145,7 +145,7 @@
     margin-bottom: 0;
 }
 
-.ft-recipe .ft-recipe__content .content__footer a {
+.ft-recipe .ft-recipe__content .content__footer a, .ft-recipe .ft-recipe__content .content__footer button {
     color: inherit;
     text-decoration: none;
     font-family: var(--headlinesFont);
@@ -166,6 +166,59 @@
     transform: translateY(-3px);
     box-shadow: 0 10px 34px 0 rgba(255, 79, 135, 0.32);
 }
+
+
+.modal .modal-dialog {
+	max-width: 800px;
+    height: 400px;
+}
+.modal .modal-header, .modal .modal-body p{
+    font-size: 14px;
+}
+.modal .modal-header, .modal .modal-body, .modal .modal-footer {
+	padding: 20px 30px;
+
+}
+.modal .modal-header, .modal .modal-body, .modal .modal-footer input{
+    font-size: 13px;
+
+}
+.modal .modal-content {
+	border-radius: 3px;
+	font-size: 14px;
+    height: 800px;
+}
+.modal .modal-footer {
+	background: #ecf0f1;
+	border-radius: 0 0 3px 3px;
+}
+.modal .modal-title {
+	display: inline-block;
+    font-size: 18px;
+
+}
+.modal .form-control {
+	border-radius: 2px;
+	box-shadow: none;
+	border-color: #dddddd;
+    font-size: 17px;
+
+}
+.modal textarea.form-control {
+	resize: vertical;
+}
+.modal .btn {
+	border-radius: 2px;
+	min-width: 100px;
+}	
+.modal form label {
+	font-weight: normal;
+    font-size: 17px;
+}	
+iframe{
+    height:800px;
+}
+
 
 
 @media (max-width: 991px) {
@@ -190,3 +243,4 @@
     }
 
 }
+

@@ -24,7 +24,14 @@
                     <span class="title">Serving</span>
                 </li>
             </ul>
-            <a href= '<%- recipe_url %>' target="_blank" rel="noopener noreferrer">View Recipe</a>
+            <% const maps_url = "https://www.google.com/maps/search/?api=1&query=" + encodeURI(recipe_title) %>
+            <% if (recipe_url.startsWith("https://food52.com") || (recipe_url.startsWith("http://www.seriouseats.com"))) { %>
+                <a href="<%= recipe_url %>" target="_blank" class="btn btn-primary">View Recipe</a>
+            <% } else { %>
+            <button class = "viewmodal" id= "addbutton" href="#viewrecipe" data-toggle="modal" value = "<%- recipe_url %>" >View Recipe</button>
+
+            <% }; %>
+            <a href= '<%- maps_url %>' target="_blank" rel="noopener noreferrer" style="margin-top: 10px; background-color: var(--fuelYellow);;">Find Restaurants</a>
         </footer>
     </div>
 </div>
