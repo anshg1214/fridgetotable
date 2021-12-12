@@ -106,7 +106,7 @@ app.use((req, res, next) => {
 });
 
 app.get("/", async (req, res) => {
-    authcheck = req.oidc.isAuthenticated()
+    const authcheck = req.oidc.isAuthenticated()
     if (!authcheck) {
         // res.send(req.oidc.isAuthenticated() ? 'Logged in' : 'Logged out');
         res.sendFile(__dirname + "/public/home.html");
