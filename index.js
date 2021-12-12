@@ -6,7 +6,7 @@ const bodyParser = require("body-parser");
 let ejs = require("ejs");
 const { auth, requiresAuth } = require("express-openid-connect");
 const Sequelize = require("sequelize-cockroachdb");
-import pg from 'pg';
+const pg = require("pg");
 
 const { getFoodInfo } = require("./api/food.js");
 const { getRecipeOptions } = require("./api/recipe.js");
@@ -21,12 +21,12 @@ var sequelize = new Sequelize({
     port: process.env.SQL_PORT,
     database: process.env.SQL_DATABASE,
     dialectOptions: {
-      ssl: {
-        rejectUnauthorized: false,
-      },
+        ssl: {
+            rejectUnauthorized: false,
+        },
     },
     dialectModule: pg,
-    logging: false, 
+    logging: false,
 });
 
 const People = sequelize.define("people", {
@@ -40,38 +40,38 @@ const People = sequelize.define("people", {
     nickname: {
         type: Sequelize.STRING,
     },
-
 });
 
-const Items = sequelize.define("items", {
-    email: {
-        type: Sequelize.STRING,
-        primaryKey: true,
+const Items = sequelize.define(
+    "items",
+    {
+        email: {
+            type: Sequelize.STRING,
+            primaryKey: true,
+        },
+        name: {
+            type: Sequelize.TEXT,
+        },
+        quantity: {
+            type: Sequelize.INTEGER,
+        },
+        unit: {
+            type: Sequelize.STRING,
+        },
+        category: {
+            type: Sequelize.STRING,
+        },
+        image_url: {
+            type: Sequelize.STRING,
+        },
     },
-    name: {
-        type: Sequelize.TEXT,
-    },
-    quantity: {
-        type: Sequelize.INTEGER,
-    },
-    unit: {
-        type: Sequelize.STRING,
-    },
-    category: {
-        type: Sequelize.STRING,
-    },
-    image_url: {
-        type: Sequelize.STRING,
-    },
-
-
-}, {
-    timestamps: false,
-    freezeTableName: true,
-});
+    {
+        timestamps: false,
+        freezeTableName: true,
+    }
+);
 
 let numeberref = 0;
-
 
 const app = express();
 app.set("view engine", "ejs");
@@ -90,14 +90,13 @@ const config = {
     baseURL: process.env.BASE_URL,
     clientID: process.env.CLIENT_ID,
     issuerBaseURL: process.env.ISSUER_BASE_URL,
-}; 
+};
 
 app.use(auth(config));
 
 app.use(express.json());
 
 app.use(express.static(path.join(__dirname, "public")));
-
 
 app.use((req, res, next) => {
     res.locals.isAuthenticated = req.oidc.isAuthenticated();
@@ -106,13 +105,12 @@ app.use((req, res, next) => {
 });
 
 app.get("/", async (req, res) => {
-    const authcheck = req.oidc.isAuthenticated()
+    const authcheck = req.oidc.isAuthenticated();
     if (!authcheck) {
         // res.send(req.oidc.isAuthenticated() ? 'Logged in' : 'Logged out');
         res.sendFile(__dirname + "/public/home.html");
-    }
-    else{
-        res.redirect('/inventory');
+    } else {
+        res.redirect("/inventory");
     }
 });
 
@@ -131,48 +129,51 @@ let inventory = [
         quantity: "1",
         unit: "kg",
         category: "food",
-        image_url: "https://www.edamam.com/food-img/8ee/8ee7b75071fc907cce2819031a9ae563.jpg",
+        image_url:
+            "https://www.edamam.com/food-img/8ee/8ee7b75071fc907cce2819031a9ae563.jpg",
         idnumber: numeberref,
     },
 ];
 
-app.get("/inventory",requiresAuth(), async (req, res) => {
+app.get("/inventory", requiresAuth(), async (req, res) => {
     const checkuserexist = await People.findByPk(req.oidc.user.email);
-    if(!checkuserexist){
-        People.sync({ force: false, })
-            .then(function () {
+    if (!checkuserexist) {
+        People.sync({ force: false }).then(function () {
             // Insert new data into People table
             return People.bulkCreate([
                 {
                     email: req.oidc.user.email,
                     name: req.oidc.user.name,
                     nickname: req.oidc.user.nickname,
-
                 },
             ]);
-        })
-    };
+        });
+    }
 
     const returndata = await Items.findAll({
         where: {
-          email: req.oidc.user.email
-        }
+            email: req.oidc.user.email,
+        },
     });
-    res.render("inventory", { inventory: inventory.filter(item => item.email === req.oidc.user.email)});
+    res.render("inventory", {
+        inventory: inventory.filter(
+            (item) => item.email === req.oidc.user.email
+        ),
+    });
 });
 
 app.get("/profile", requiresAuth(), async (req, res) => {
     res.send(JSON.stringify(req.oidc.user));
 });
 
-app.post("/additems",requiresAuth(), async (req, res) => {
+app.post("/additems", requiresAuth(), async (req, res) => {
     const userInput = req.body;
     const foodInfo = await getFoodInfo(
         userInput.name,
         process.env.FOODAPP_ID,
         process.env.FOODAPP_KEY
     );
-    datareq = foodInfo.data.parsed[0].food;
+    const datareq = foodInfo.data.parsed[0].food;
     numeberref = numeberref + 1;
     Items.bulkCreate([
         {
@@ -182,7 +183,7 @@ app.post("/additems",requiresAuth(), async (req, res) => {
             unit: userInput.unit,
             category: datareq.categoryLabel,
             image_url: datareq.image,
-        }
+        },
     ]);
     inventory.push({
         email: req.oidc.user.email,
@@ -197,12 +198,12 @@ app.post("/additems",requiresAuth(), async (req, res) => {
     return res.redirect("/inventory");
 });
 
-app.post("/deleteitem",requiresAuth(), async (req, res) => {
+app.post("/deleteitem", requiresAuth(), async (req, res) => {
     inventory.splice(req.body.id, 1);
     res.redirect("/inventory");
 });
 let recipedata;
-app.post("/getrecipe",requiresAuth(), async (req, res) => {
+app.post("/getrecipe", requiresAuth(), async (req, res) => {
     const userInput = req.body.value;
 
     const recipeOptions = await getRecipeOptions(
