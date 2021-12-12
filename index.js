@@ -6,6 +6,7 @@ const bodyParser = require("body-parser");
 let ejs = require("ejs");
 const { auth, requiresAuth } = require("express-openid-connect");
 const Sequelize = require("sequelize-cockroachdb");
+import pg from 'pg';
 
 const { getFoodInfo } = require("./api/food.js");
 const { getRecipeOptions } = require("./api/recipe.js");
@@ -24,6 +25,7 @@ var sequelize = new Sequelize({
         rejectUnauthorized: false,
       },
     },
+    dialectModule: pg,
     logging: false, 
 });
 
