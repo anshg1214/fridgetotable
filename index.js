@@ -9,7 +9,7 @@ const Sequelize = require("sequelize-cockroachdb");
 
 const { getFoodInfo } = require("./api/food.js");
 const { getRecipeOptions } = require("./api/recipe.js");
-const { testd } = require("./testdata");
+// const { testd } = require("./testdata");
 // const { testd1 } = require("./testdata1");
 
 var sequelize = new Sequelize({
