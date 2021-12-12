@@ -1,9 +1,10 @@
 {
   "name": "fridgetotable",
   "version": "1.0.0",
-  "description": "",
+  "description": "[![MIT License](https://img.shields.io/apm/l/atomic-design-ui.svg?)](https://github.com/tterb/atomic-design-ui/blob/master/LICENSEs)",
   "main": "index.js",
   "scripts": {
+    "start": "node index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Ansh Goyal",
@@ -18,5 +19,14 @@
     "pg": "^8.7.1",
     "sequelize": "^6.11.0",
     "sequelize-cockroachdb": "^6.0.3"
-  }
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/anshg1214/fridgetotable.git"
+  },
+  "bugs": {
+    "url": "https://github.com/anshg1214/fridgetotable/issues"
+  },
+  "homepage": "https://github.com/anshg1214/fridgetotable#readme"
 }
