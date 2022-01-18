@@ -1,6 +1,6 @@
 body {
-	color: #566787;
-	background: #f5f5f5;
+	color: #212529;
+	background-color: #EEF2F5;
 	font-family: 'Varela Round', sans-serif;
 	font-size: 13px;
 }
@@ -16,7 +16,7 @@ body {
 }
 .table-title {        
 	padding-bottom: 15px;
-	background: #435d7d;
+	background: #1EAFED;
 	color: #fff;
 	padding: 16px 30px;
 	min-width: 100%;
@@ -243,7 +243,7 @@ thead tr th{
     font-size: 20px;
     color: crimson;
     padding: 0 -5px;
-    background: #fff;
+    background: #EEF2F5;
     transform: translateX(-50%);
 }
 #inventorytitle{
@@ -254,4 +254,19 @@ thead tr th{
 	font-size: 17px;
 	text-align: center;
 	text-transform: sentence-case;
+}
+
+
+/* Button Styling */
+#pushbutton{
+    background-color: #EA168E;
+}
+
+#addbutton{
+    background-color: #2bbb4c;
+}
+
+.checkbox{
+    height: 17px;
+    width: 17px;
 }

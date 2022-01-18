@@ -71,7 +71,7 @@ div {
     position: fixed;
     width: 100%;
     padding: 20px 0;
-    background-color: #364F6B;
+    background-color: #2D46B9;
     z-index: 500;
     transition: all 0.3s ease;
     font-weight: 600;
@@ -93,7 +93,7 @@ div {
 .navibar .logo a{
     font-size: 3.8rem;
     font-weight: 600;
-    color: #FC5185; 
+    color: #F037A5; 
     transition: all 0.3s ease;
 
 }
