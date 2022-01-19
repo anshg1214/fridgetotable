@@ -15,16 +15,8 @@
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
         <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
         <script src="js/script.js"></script>
-        <link rel="stylesheet" href="css/inventory.css" />
         <link rel="stylesheet" href="css/navbar.css" />
-        <style>
-            .navibar{
-                position: relative;
-            }
-        </style>
-
-
-
+        <link rel="stylesheet" href="css/inventory.css" />
 
     </head>
 <body>
@@ -73,7 +65,7 @@
                     <tbody>
 
                         <% for(var i = 0; i < inventory.length; i++) { %>
-                            <%- include('tablecolumn', {index_number: i, name: inventory[i].name , quantity: inventory[i].quantity, unit: inventory[i].unit, category: inventory[i].category, image_url: inventory[i].image_url , idnumber: inventory[i].idnumber}); -%>
+                            <%- include('tablecolumn', {index_number: inventory[i].sno, name: inventory[i].name , quantity: inventory[i].quantity, unit: inventory[i].unit, category: inventory[i].category, image_url: inventory[i].image_url , idnumber: inventory[i].sno}); -%>
                         <% }%>
                             
                     </tbody>

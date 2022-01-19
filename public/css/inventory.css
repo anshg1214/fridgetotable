@@ -246,9 +246,9 @@ thead tr th{
     background: #EEF2F5;
     transform: translateX(-50%);
 }
-#inventorytitle{
+/* #inventorytitle{
 	margin-top: 20px;
-}
+} */
 
 .introduction p{
 	font-size: 17px;

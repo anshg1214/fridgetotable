@@ -1,4 +1,6 @@
-
+body{
+    background-color: #EEF2F5;
+}
 /* Recipebox */
 #recipestitle::before{
     content: "";
@@ -18,7 +20,7 @@
     font-size: 20px;
     color: crimson;
     padding: 0 5px;
-    background: #fff;
+    background: #EEF2F5;
     transform: translateX(-50%);
 }
 
