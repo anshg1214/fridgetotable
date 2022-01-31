@@ -107,5 +107,17 @@
         </div>
     </div>
 
+    <!-- Error Modal -->
+    <input type="hidden" id='error' value='<%= error %>' >
+    <div id="errorModal" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title"><%= error %></h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                </div>
+            </div>
+        </div>
+    </div>
     </body>
 </html>

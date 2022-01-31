@@ -94,6 +94,7 @@ const config = {
     clientID: process.env.CLIENT_ID,
     issuerBaseURL: process.env.ISSUER_BASE_URL,
 };
+var postErr = "";
 
 app.use(auth(config));
 
@@ -148,6 +149,7 @@ app.get("/inventory", requiresAuth(), async (req, res) => {
     });
     res.render("inventory", {
         inventory: returndata,
+        error: postErr,
     });
 });
 
@@ -157,23 +159,34 @@ app.get("/profile", requiresAuth(), async (req, res) => {
 
 app.post("/additems", requiresAuth(), async (req, res) => {
     const userInput = req.body;
-    const foodInfo = await getFoodInfo(
-        userInput.name,
-        process.env.FOODAPP_ID,
-        process.env.FOODAPP_KEY
-    );
-    const datareq = foodInfo.data.parsed[0].food;
+    try {
+        const foodInfo = await getFoodInfo(
+            userInput.name,
+            process.env.FOODAPP_ID,
+            process.env.FOODAPP_KEY
+        );
+        const datareq = foodInfo.data.parsed[0].food;
+        console.log(datareq);
+    } catch (e) {
+        postErr = "Error Occured, Please try a different item";
+        return res.redirect("/inventory");
+    }
 
-    Items.bulkCreate([
-        {
-            email: req.oidc.user.email,
-            name: datareq.label,
-            quantity: userInput.quantity,
-            unit: userInput.unit,
-            category: datareq.categoryLabel,
-            image_url: datareq.image,
-        },
-    ]);
+    try {
+        Items.bulkCreate([
+            {
+                email: req.oidc.user.email,
+                name: datareq.label,
+                quantity: userInput.quantity,
+                unit: userInput.unit,
+                category: datareq.categoryLabel,
+                image_url: datareq.image,
+            },
+        ]);
+        postErr = "";
+    } catch (e) {
+        postErr = "Error Occured, please try again";
+    }
 
     return res.redirect("/inventory");
 });

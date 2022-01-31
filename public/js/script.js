@@ -14,6 +14,11 @@ $(document).ready(function(){
             $("#hiddeninput").val(selectedcheckbox);
         }
     });
+    if($("#error").val() != ''){
+        $('#errorModal').modal('show');
+    }
+    $("#error").val('');
+    
 });
 
 // function formsubmit(){
