@@ -4,9 +4,15 @@ const axios = require("axios");
 const path = require("path");
 const bodyParser = require("body-parser");
 let ejs = require("ejs");
-const { auth, requiresAuth } = require("express-openid-connect");
 const Sequelize = require("sequelize-cockroachdb");
 const pg = require("pg");
+
+const mongoose = require("mongoose");
+const session = require('express-session');
+const passport = require("passport");
+const passportLocalMongoose = require("passport-local-mongoose");
+var GoogleStrategy = require('passport-google-oauth20').Strategy;
+const findOrCreate = require('mongoose-findorcreate');
 
 const { getFoodInfo } = require("./api/food.js");
 const { getRecipeOptions } = require("./api/recipe.js");
@@ -29,19 +35,6 @@ var sequelize = new Sequelize({
     logging: false,
 });
 
-const People = sequelize.define("people", {
-    email: {
-        type: Sequelize.STRING,
-        primaryKey: true,
-    },
-    name: {
-        type: Sequelize.TEXT,
-    },
-    nickname: {
-        type: Sequelize.STRING,
-    },
-});
-
 const Items = sequelize.define(
     "items",
     {
@@ -50,7 +43,7 @@ const Items = sequelize.define(
             primaryKey: true,
             autoIncrement: true,
         },
-        email: {
+        userid: {
             type: Sequelize.STRING,
         },
         name: {
@@ -79,94 +72,162 @@ const Items = sequelize.define(
 const app = express();
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
-
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.json());
+app.use(express.static(path.join(__dirname, "public")));
+
+app.use(session({
+    secret: process.env.SECRET,
+    resave: false,
+    saveUninitialized: false
+}))
+
+app.use(passport.initialize());
+app.use(passport.session());
+
+mongoose.connect(process.env.MONGODB_URL, { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.set("useCreateIndex", true);
+
+const userSchema = new mongoose.Schema({
+    email: String,
+    password: String,
+    googleId: String,
+    favourite: [String],
+});
+
+userSchema.plugin(passportLocalMongoose);
+userSchema.plugin(findOrCreate);
+const User = new mongoose.model("User", userSchema);
+
+passport.use(User.createStrategy());
+
+passport.serializeUser(function (user, done) {
+    done(null, user.id);
+});
+
+passport.deserializeUser(function (id, done) {
+    User.findById(id, function (err, user) {
+        done(err, user);
+    });
+});
+
+
+passport.use(new GoogleStrategy({
+    clientID: process.env.CLIENT_ID,
+    clientSecret: process.env.CLIENT_SECRET,
+    callbackURL: process.env.GOOGLE_CALLBACK_URL,
+    userProfileURL: "https://www.googleapis.com/oauth2/v3/userinfo"
+},
+    function (accessToken, refreshToken, profile, cb) {
+        User.findOrCreate({ googleId: profile.id }, function (err, user) {
+            return cb(err, user);
+        });
+    }
+));
 
 app.listen(process.env.PORT || 3000, () => {
     console.log("Server started on port 3000");
 });
 
-const config = {
-    authRequired: false,
-    auth0Logout: true,
-    secret: process.env.SECRET,
-    baseURL: process.env.BASE_URL,
-    clientID: process.env.CLIENT_ID,
-    issuerBaseURL: process.env.ISSUER_BASE_URL,
-};
-var postErr = "";
+app.get('/', (req, res) => {
+    res.sendFile(__dirname + "/public/home.html");
+})
 
-app.use(auth(config));
+app.get('/auth/google', passport.authenticate('google', { scope: ["profile"] }));
 
-app.use(express.json());
-
-app.use(express.static(path.join(__dirname, "public")));
-
-app.use((req, res, next) => {
-    res.locals.isAuthenticated = req.oidc.isAuthenticated();
-    res.locals.activeRoute = req.originalUrl;
-    next();
-});
-
-app.get("/", async (req, res) => {
-    const authcheck = req.oidc.isAuthenticated();
-    if (!authcheck) {
-        res.sendFile(__dirname + "/public/home.html");
-    } else {
+app.get("/auth/google/inventory",
+    passport.authenticate('google', { failureRedirect: "/login" }),
+    function (req, res) {
         res.redirect("/inventory");
     }
-});
+);
 
-app.get("/sign-up", (req, res) => {
-    res.oidc.login({
-        authorizationParams: {
-            screen_hint: "signup",
-        },
-    });
-});
-
-
-app.get("/inventory", requiresAuth(), async (req, res) => {
-    const userInfo = req.oidc.user;
-    const checkuserexist = await People.findByPk(userInfo.email);
-    if (!checkuserexist) {
-        People.sync({ force: false }).then(function () {
-            // Insert new data into People table
-            return People.bulkCreate([
-                {
-                    email: userInfo.email,
-                    name: userInfo.name,
-                    nickname: userInfo.nickname,
-                },
-            ]);
-        });
+app.get("/register", function (req, res) {
+    if (req.isAuthenticated()) {
+        res.redirect("/inventory");
     }
+    else {
+        res.render("register");
+    }
+});
 
-    const returndata = await Items.findAll({
-        where: {
-            email: userInfo.email,
-        },
+app.post('/register', (req, res) => {
+    User.register({ username: req.body.username }, req.body.password, function (err, user) {
+        if (err) {
+            console.log(err);
+            res.redirect("/register");
+        } else {
+            passport.authenticate("local")(req, res, function () {
+                res.redirect('/inventory');
+            });
+        }
     });
-    res.render("inventory", {
-        inventory: returndata,
-        error: postErr,
+})
+
+app.get("/login", function (req, res) {
+    if (req.isAuthenticated()) {
+        res.redirect("/inventory");
+    } else {
+        res.render("login");
+    }
+});
+
+app.post("/login", function (req, res) {
+    const user = new User({
+        username: req.body.username,
+        password: req.body.password
+    });
+    req.login(user, function (err) {
+        if (err) {
+            console.log(err);
+            res.redirect('/login');
+        }
+        else {
+            passport.authenticate("local")(req, res, function () {
+                res.redirect("/inventory");
+            });
+        }
     });
 });
 
-app.get("/profile", requiresAuth(), async (req, res) => {
-    res.send(JSON.stringify(req.oidc.user));
+app.get("/logout", function (req, res) {
+    req.logout();
+    res.redirect("/");
 });
 
-app.post("/additems", requiresAuth(), async (req, res) => {
+var postErr = "";
+
+app.get("/inventory", async (req, res) => {
+    if (req.isAuthenticated()) {
+        user_id = req.user.id;
+        const returndata = await Items.findAll({
+            where: {
+                userid: user_id,
+            },
+        });
+        res.render("inventory", {
+            inventory: returndata,
+            error: postErr,
+        });
+        // res.send('inventory');
+    } else {
+        // res.send('not authenticated');
+        res.redirect("/login");
+    }
+});
+
+var datareq = '';
+
+app.post("/additems", async (req, res) => {
     const userInput = req.body;
+    user_id = req.user.id;
     try {
         const foodInfo = await getFoodInfo(
             userInput.name,
             process.env.FOODAPP_ID,
             process.env.FOODAPP_KEY
         );
-        const datareq = foodInfo.data.parsed[0].food;
-        console.log(datareq);
+        datareq = foodInfo.data.parsed[0].food;
     } catch (e) {
         postErr = "Error Occured, Please try a different item";
         return res.redirect("/inventory");
@@ -175,7 +236,7 @@ app.post("/additems", requiresAuth(), async (req, res) => {
     try {
         Items.bulkCreate([
             {
-                email: req.oidc.user.email,
+                userid: user_id,
                 name: datareq.label,
                 quantity: userInput.quantity,
                 unit: userInput.unit,
@@ -185,13 +246,14 @@ app.post("/additems", requiresAuth(), async (req, res) => {
         ]);
         postErr = "";
     } catch (e) {
+        console.log(e)
         postErr = "Error Occured, please try again";
     }
 
     return res.redirect("/inventory");
 });
 
-app.post("/deleteitem", requiresAuth(), async (req, res) => {
+app.post("/deleteitem", async (req, res) => {
     const id_delete = req.body.id;
     await Items.destroy({
         where: {
@@ -201,7 +263,7 @@ app.post("/deleteitem", requiresAuth(), async (req, res) => {
     res.redirect("/inventory");
 });
 let recipedata;
-app.post("/getrecipe", requiresAuth(), async (req, res) => {
+app.post("/getrecipe", async (req, res) => {
     const userInput = req.body.value;
 
     const recipeOptions = await getRecipeOptions(
