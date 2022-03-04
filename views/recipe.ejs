@@ -27,11 +27,11 @@
 
 <section class="recipes" id="recipes">
     <div class="max-width">
-        <h2 class="title" id= "recipestitle">Recipe Suggestions</h2>
+        <h2 class="title" id= "recipestitle"><%- pageTitle %></h2>
         <!-- <h3 class="subtitle">who i am</h3> -->
         <div class="recipes-content">
             <%for (var i = 0; i < recipeOptions.length; i++) { %>
-                <%- include('recipebox', {recipe_title: recipeOptions[i].recipe.label, image_url: recipeOptions[i].recipe.image, ingredient_count: recipeOptions[i].recipe.ingredients.length, serving_number: recipeOptions[i].recipe.yield, recipe_url: recipeOptions[i].recipe.url , index_number: i}); -%>
+                <%- include('recipebox', {recipe_title: recipeOptions[i].recipe.label, image_url: recipeOptions[i].recipe.image, ingredient_count: recipeOptions[i].recipe.ingredients.length, serving_number: recipeOptions[i].recipe.yield, recipe_url: recipeOptions[i].recipe.url , index_number: i, show_button: show_button}); -%>
 
             <%}%>
 

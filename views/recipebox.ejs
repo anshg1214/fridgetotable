@@ -32,6 +32,17 @@
 
             <% }; %>
             <a href= '<%- maps_url %>' target="_blank" rel="noopener noreferrer" style="margin-top: 10px; background-color: var(--fuelYellow);;">Find Restaurants</a>
+
+            <% if (show_button) { %>
+                <form action="/addFavourite" method="post">
+                    <input type="hidden" name="recipe_title" value="<%- recipe_title %>">
+                    <input type="hidden" name="image_url" value="<%- image_url %>">
+                    <input type="hidden" name="ingredient_count" value="<%- ingredient_count %>">
+                    <input type="hidden" name="serving_number" value="<%- serving_number %>">
+                    <input type="hidden" name="recipe_url" value="<%- recipe_url %>">
+                    <button style="margin-top: 10px; background-color: var(--primary);">Add to Favorites</button>
+                </form>
+            <% }; %>
         </footer>
     </div>
 </div>

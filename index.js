@@ -274,6 +274,43 @@ app.post("/getrecipe", async (req, res) => {
 
     recipedata = recipeOptions.data.hits.slice(0, 9);
     res.render("recipe", {
+        pageTitle: "Recipe Suggestions",
         recipeOptions: recipedata,
+        show_button: true,
     });
 });
+
+
+app.get("/favourite", (req, res) => {
+    User.findById(req.user.id, function (err, user) {
+        if (err) {
+            console.log(err);
+        } else {
+            finalarr = [];
+            for(let i = 0; i < user.favourite.length; i++) {
+                finalarr.push(JSON.parse(user.favourite[i]));
+            }
+            res.render("recipe", {
+                recipeOptions: finalarr,
+                pageTitle: "Favorite Recipes",
+                show_button: false,
+            });
+        }
+    });
+});
+
+app.post("/addFavourite",(req, res) => {
+
+    fav_obj = {"recipe": {label: req.body.recipe_title, image: req.body.image_url, yield: req.body.serving_number, url: req.body.recipe_url, ingredients: {length: req.body.ingredient_count}}};
+    fav_obj = JSON.stringify(fav_obj);
+
+    User.findById(req.user.id, function (err, user) {
+        if (err) {
+            console.log(err);
+        } else {
+            user.favourite.push(fav_obj);
+            user.save();
+        }
+    });
+    res.redirect("/favourite");
+})
