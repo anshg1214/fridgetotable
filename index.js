@@ -6,6 +6,7 @@ const bodyParser = require("body-parser");
 let ejs = require("ejs");
 const Sequelize = require("sequelize-cockroachdb");
 const pg = require("pg");
+const rateLimit = require('express-rate-limit')
 
 const mongoose = require("mongoose");
 const session = require('express-session');
@@ -83,7 +84,14 @@ const Items = sequelize.define(
     }
 );
 
+const limiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes)
+    message: "Too many request from this IP"
+})
+
 const app = express();
+app.use(limiter);
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -103,7 +111,7 @@ app.use(session({
     secret: process.env.SECRET,
     resave: false,
     saveUninitialized: true,
-    cookie: { secure: false, maxAge: 3600000 }
+    cookie: { secure: true, maxAge: 3600000 }
 }))
 
 app.use(passport.initialize());
@@ -325,7 +333,7 @@ app.get("/favourite", (req, res) => {
     });
 });
 
-app.post("/addFavourite", async(req, res) => {
+app.post("/addFavourite", async (req, res) => {
 
     fav_obj = { "recipe": { label: req.body.recipe_title, image: req.body.image_url, yield: req.body.serving_number, url: req.body.recipe_url, ingredients: { length: req.body.ingredient_count } } };
     fav_obj = JSON.stringify(fav_obj);
