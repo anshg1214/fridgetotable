@@ -12,10 +12,10 @@
   "dependencies": {
     "axios": "^0.24.0",
     "body-parser": "^1.19.0",
+    "connect-redis": "^6.1.1",
     "dotenv": "^10.0.0",
     "ejs": "^3.1.6",
     "express": "^4.17.1",
-    "express-openid-connect": "^2.5.2",
     "express-session": "^1.17.2",
     "mongoose": "^5.4.5",
     "mongoose-findorcreate": "^3.0.0",
@@ -24,8 +24,10 @@
     "passport-local": "^1.0.0",
     "passport-local-mongoose": "^6.1.0",
     "pg": "^8.7.1",
+    "redis": "^3.1.2",
     "sequelize": "^6.11.0",
-    "sequelize-cockroachdb": "^6.0.3"
+    "sequelize-cockroachdb": "^6.0.3",
+    "uuid": "^8.3.2"
   },
   "repository": {
     "type": "git",

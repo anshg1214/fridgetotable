@@ -14,6 +14,17 @@ const passportLocalMongoose = require("passport-local-mongoose");
 var GoogleStrategy = require('passport-google-oauth20').Strategy;
 const findOrCreate = require('mongoose-findorcreate');
 
+const connectRedis = require("connect-redis");
+const { v4: uuidv4 } = require('uuid');
+const redis = require('redis');
+let redisStore = connectRedis(session);
+
+const redisClient = redis.createClient({
+    port: process.env.REDIS_PORT,
+    host: process.env.REDIS_URI,
+    password: process.env.REDIS_PASSWORD
+});
+
 const { getFoodInfo } = require("./api/food.js");
 const { getRecipeOptions } = require("./api/recipe.js");
 // const { testd } = require("./testdata");
@@ -76,10 +87,20 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
 
+redisClient.on('error', (err) => {
+    console.log('Redis error: ', err);
+});
+
 app.use(session({
+    genid: (req) => {
+        return uuidv4()
+    },
+    store: new redisStore({ client: redisClient }),
+    name: 'sessionID',
     secret: process.env.SECRET,
     resave: false,
-    saveUninitialized: false
+    saveUninitialized: true,
+    cookie: { secure: false, maxAge: 3600000 }
 }))
 
 app.use(passport.initialize());
@@ -287,7 +308,7 @@ app.get("/favourite", (req, res) => {
             console.log(err);
         } else {
             finalarr = [];
-            for(let i = 0; i < user.favourite.length; i++) {
+            for (let i = 0; i < user.favourite.length; i++) {
                 finalarr.push(JSON.parse(user.favourite[i]));
             }
             res.render("recipe", {
@@ -299,9 +320,9 @@ app.get("/favourite", (req, res) => {
     });
 });
 
-app.post("/addFavourite",(req, res) => {
+app.post("/addFavourite", (req, res) => {
 
-    fav_obj = {"recipe": {label: req.body.recipe_title, image: req.body.image_url, yield: req.body.serving_number, url: req.body.recipe_url, ingredients: {length: req.body.ingredient_count}}};
+    fav_obj = { "recipe": { label: req.body.recipe_title, image: req.body.image_url, yield: req.body.serving_number, url: req.body.recipe_url, ingredients: { length: req.body.ingredient_count } } };
     fav_obj = JSON.stringify(fav_obj);
 
     User.findById(req.user.id, function (err, user) {
