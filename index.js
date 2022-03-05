@@ -18,12 +18,15 @@ const connectRedis = require("connect-redis");
 const { v4: uuidv4 } = require('uuid');
 const redis = require('redis');
 let redisStore = connectRedis(session);
+var lru = require('redis-lru');
 
 const redisClient = redis.createClient({
     port: process.env.REDIS_PORT,
     host: process.env.REDIS_URI,
     password: process.env.REDIS_PASSWORD
 });
+
+var redisCache = lru(redisClient, { max: 15, score: () => 1, increment: true });
 
 const { getFoodInfo } = require("./api/food.js");
 const { getRecipeOptions } = require("./api/recipe.js");
@@ -246,9 +249,10 @@ app.post("/additems", async (req, res) => {
         const foodInfo = await getFoodInfo(
             userInput.name,
             process.env.FOODAPP_ID,
-            process.env.FOODAPP_KEY
+            process.env.FOODAPP_KEY,
+            redisCache
         );
-        datareq = foodInfo.data.parsed[0].food;
+        datareq = foodInfo.parsed[0].food;
     } catch (e) {
         postErr = "Error Occured, Please try a different item";
         return res.redirect("/inventory");
@@ -290,10 +294,11 @@ app.post("/getrecipe", async (req, res) => {
     const recipeOptions = await getRecipeOptions(
         userInput,
         process.env.RECEPIAPP_ID,
-        process.env.RECEPIAPP_KEY
+        process.env.RECEPIAPP_KEY,
+        redisCache
     );
 
-    recipedata = recipeOptions.data.hits.slice(0, 9);
+    recipedata = recipeOptions.hits.slice(0, 9);
     res.render("recipe", {
         pageTitle: "Recipe Suggestions",
         recipeOptions: recipedata,
@@ -320,12 +325,12 @@ app.get("/favourite", (req, res) => {
     });
 });
 
-app.post("/addFavourite", (req, res) => {
+app.post("/addFavourite", async(req, res) => {
 
     fav_obj = { "recipe": { label: req.body.recipe_title, image: req.body.image_url, yield: req.body.serving_number, url: req.body.recipe_url, ingredients: { length: req.body.ingredient_count } } };
     fav_obj = JSON.stringify(fav_obj);
 
-    User.findById(req.user.id, function (err, user) {
+    await User.findById(req.user.id, function (err, user) {
         if (err) {
             console.log(err);
         } else {
