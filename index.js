@@ -94,6 +94,7 @@ const app = express();
 app.use(limiter);
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
+app.set('trust proxy', 1);
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
@@ -111,7 +112,7 @@ app.use(session({
     secret: process.env.SECRET,
     resave: false,
     saveUninitialized: true,
-    cookie: { secure: true, maxAge: 3600000 }
+    cookie: { secure: false, maxAge: 3600000 }
 }))
 
 app.use(passport.initialize());
