@@ -33,7 +33,7 @@ To run this project, you will need to add the following environment variables to
 `FOODAPP_ID` - EDAMAM ID [Link](https://developer.edamam.com/)  
 `RECEPIAPP_KEY` - EDAMAM Key [Link](https://developer.edamam.com/)  
 `RECEPIAPP_ID` - EDAMM ID [Link](https://developer.edamam.com/)  
-`SECRET` - Passport.js Secret
+`SECRET` - Passport.js Secret  
 `CLIENT_ID` - Google OAuth Application CLIENT ID [Link](https://console.cloud.google.com/)  
 `CLIENT_SECRET` - Google OAuth Application CLIENT secret [Link](https://console.cloud.google.com/)  
 `SQL_USERNAME` - CockroachDB SQL UserName [Link](https://www.cockroachlabs.com/)  
